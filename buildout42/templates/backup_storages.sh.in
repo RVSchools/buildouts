@@ -1,0 +1,38 @@
+#!/bin/sh
+#
+#	backup_storages	Backup all storages
+#
+
+ROOT="${buildout:directory}"
+BACKUP_ROOT="$ROOT/backups"
+EXTRA_DBS="cofp communitylearning Plone rvsa trustees"
+REPOZO="$ROOT/bin/repozo"
+REPOZO_ARGS="-B -z"
+if [ "$1" == "-f" ]; then
+    REPOZO_ARGS="-B -z -F -k"
+fi
+
+if [ ! -d $BACKUP_ROOT ]; then
+    mkdir $BACKUP_ROOT
+fi
+
+FS_PATH="$ROOT/var/filestorage"
+BLOBS_PATH="$ROOT/var/blobstorage"
+$REPOZO $REPOZO_ARGS --repository=$BACKUP_ROOT -f $FS_PATH/Data.fs
+cd $ROOT/var && rsync -a --delete --force ./blobstorage $BACKUP_ROOT
+
+
+for DB in $EXTRA_DBS; do
+    FS_PATH="$ROOT/var/$DB/filestorage"
+    if [ ! -d "$BACKUP_ROOT/$DB" ]; then
+        mkdir $BACKUP_ROOT/$DB
+    fi
+    $REPOZO $REPOZO_ARGS --repository=$BACKUP_ROOT/$DB -f $FS_PATH/Data.fs
+    cd $ROOT/var/$DB && rsync -a --delete --force ./blobstorage $BACKUP_ROOT/$DB
+done
+
+for EXTENSION in dat fsz index; do
+    rm -f `find $BACKUP_ROOT -name "*.$EXTENSION" -mtime +14`
+done
+
+
