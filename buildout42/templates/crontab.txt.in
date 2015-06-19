@@ -1,0 +1,10 @@
+# Add these entries to the user crontab for the plone user
+0 1 * * Sun ${buildout:directory}/bin/zeopack -S 1
+0 2 * * Sun ${buildout:directory}/bin/zeopack -S plone
+0 3 * * Sun ${buildout:directory}/bin/zeopack -S cofp
+0 4 * * Sun ${buildout:directory}/bin/zeopack -S communitylearning
+0 5 * * Sun ${buildout:directory}/bin/zeopack -S rvsa
+0 6 * * Sun ${buildout:directory}/bin/zeopack -S trustees
+
+0 5 * * Sat ${buildout:directory}/bin/backup_storages.sh -f
+0 5 * * 1-5,7 ${buildout:directory}/bin/backup_storages.sh

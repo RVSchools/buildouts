@@ -2,6 +2,7 @@
 .mr.developer.cfg
 backups/
 bin/
+crontab.txt
 develop-eggs/
 eggs/
 parts/
